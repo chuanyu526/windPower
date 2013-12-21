@@ -23,6 +23,7 @@ end
 
 gem 'jquery-rails'
 gem 'google-search'
+gem 'Tradsim'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
