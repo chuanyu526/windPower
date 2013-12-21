@@ -1,0 +1,2 @@
+=== windSearch
+This project is used for gather data of Chinese wind powered stations.
