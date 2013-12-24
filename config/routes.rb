@@ -1,7 +1,7 @@
 WindSearch::Application.routes.draw do
   get "search_station/index"
 
-  get "search_station/Search"
+  get "search_station/search"
 
   get "search_place/index"
 
