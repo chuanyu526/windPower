@@ -9,6 +9,7 @@ module SearchStationHelper
        	   search.query = query
       	end.each {|item| init_result << (item.title + item.content) }
       	init_result = init_result.gsub(/[^\p{Han}]/, '' )
+        #search for locations
       	pos = init_result.enum_for(:scan, /村|镇|市|县|自治州|自治县|岛|旗|草原|乡/).map    { Regexp.last_match.begin(0) }
       	pos.each do  |pos| 
        	   inter_result << init_result[pos-4, 5] + ' ' 
@@ -18,6 +19,7 @@ module SearchStationHelper
        	   places =  Tradsim::to_sim("#{places}") 
       	end 
       	freq = arr.inject(Hash.new(0)) { |h,v| h[v] += 1; h }
+        #return location that most often appears 
       	arr = arr.sort_by { |v| freq[v] }.last
       	#arr = arr.uniq 
      	 #final_result = [arr[-1],arr[-2],arr[-3]]
