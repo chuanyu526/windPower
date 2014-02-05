@@ -11,7 +11,7 @@ module SearchStationHelper
       	init_result = init_result.gsub(/[^\p{Han}]/, '' )
       	pos = init_result.enum_for(:scan, /村|镇|市|县|自治州|自治县|岛|旗|草原|乡/).map    { Regexp.last_match.begin(0) }
       	pos.each do  |pos| 
-       	   inter_result << init_result[pos-4, 4] + ' ' 
+       	   inter_result << init_result[pos-4, 5] + ' ' 
       	end 
       	arr = inter_result.split (' ')
       	arr.collect! do |places| 
