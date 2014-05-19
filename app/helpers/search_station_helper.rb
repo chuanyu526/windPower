@@ -10,14 +10,22 @@ module SearchStationHelper
       	end.each {|item| init_result << (item.title + item.content) }
       	init_result = init_result.gsub(/[^\p{Han}]/, '' )
         #search for locations
-      	pos = init_result.enum_for(:scan, /镇|市|县|自治州|自治县|岛|旗|草原|乡/).map    { Regexp.last_match.begin(0) }
+        
+
+      	pos = init_result.enum_for(:scan, /镇|市|县|岛|旗|乡/).map    { Regexp.last_match.begin(0) }
       	pos.each do  |pos| 
        	   inter_result << init_result[pos-4, 5] + ' ' 
       	end 
 
+        pos1 = init_result.enum_for(:scan, /自治州|自治县|草原|/).map    { Regexp.last_match.begin(0) }
+        pos1.each do  |pos| 
+           inter_result << init_result[pos-4, 6] + ' ' 
+        end 
+
+
         pos = init_result.enum_for(:scan, /#{query}/).map    { Regexp.last_match.begin(0) }
         pos.each do  |pos| 
-           inter_result << init_result[pos-8, 8] + ' ' 
+           inter_result << init_result[pos-7, 7] + ' ' 
         end
 
 
@@ -34,7 +42,7 @@ module SearchStationHelper
 
  	#delete "风电厂" keyword, only search for name
   	def refine_search_term(search_term)
-   		return search_term.delete "风电厂"
+   		return search_term.delete "风电场"
  	end
 
  	#helper function use to check an empty result
@@ -53,12 +61,12 @@ module SearchStationHelper
       min_result = []
       #	all_range = (0..search_term.size-1).to_a.combination(2).to_a
     	#all_substrings = []
-      i = search_term.size-2 
-      j=2
-      while   i > 1   do
+      i = 0  
+      j= search_term.size 
+      while   i <  search_term.size-1   do
          sub_strings << search_term[i , j]
-         i -= 1 
-         j += 1
+         i += 1 
+         j -= 1
       end 
 
    
@@ -99,4 +107,40 @@ module SearchStationHelper
     	return ["","",""] unless not empty_result?(min_result)
     	return min_result
    	end
+
+    def batch_search(file_name)
+      file = File.new(file_name, "r")
+      list = []
+      while (line = file.gets)
+        list.append(line)
+      end
+      file.close
+      results_list = []
+      for search_term in list
+        result = internal_search_controller(search_term)
+        results_list.append(result)
+      end
+      print results_list
+    end
+    def internal_search_controller(search_term)
+      result = search_a_location(refine_search_term(search_term))
+      # if we can not find anything, use Google search
+      if empty_result?(result)
+        #get raw Google search result
+        google_result = find_item(search_term)
+        #search against our location database
+        result = filter_search(google_result)
+      end
+      result_info = {}
+      if result[0]!=""
+        result_info={'PROVICE'=> result[0]}
+      end
+      if result[1]!=""
+        result_info['CITY'] = result[1]
+      end
+      if result[2]!=""
+        result_info['COUNTY'] = result[2]
+      end
+      return {search_term => result_info}
+    end
 end
