@@ -42,7 +42,7 @@ module SearchStationHelper
 
  	#delete "风电厂" keyword, only search for name
   	def refine_search_term(search_term)
-   		return search_term.delete "风电场"
+   		return search_term.delete "风电场\n"
  	end
 
  	#helper function use to check an empty result
@@ -120,6 +120,12 @@ module SearchStationHelper
         result = internal_search_controller(search_term)
         results_list.append(result)
       end
+      File.open('results', 'w') do |f2|  
+        # use "\n" for two lines of text  
+        for result in results_list
+          f2.puts "#{result}\n"
+        end
+      end 
       print results_list
     end
     def internal_search_controller(search_term)
@@ -140,7 +146,7 @@ module SearchStationHelper
       end
       if result[2]!=""
         result_info['COUNTY'] = result[2]
-      end
+      end 
       return {search_term => result_info}
     end
 end
